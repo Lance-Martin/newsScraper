@@ -1,6 +1,7 @@
 var express = require('express');
 var exphbs = require('express-handlebars');
 var app = express();
+var bodyParser = require('body-parser');
 
 //serve static content from the public folder
 app.use(express.static(process.cwd() + '/public'));

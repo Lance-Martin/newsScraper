@@ -1,7 +1,11 @@
 var express = require('express');
 var router = express.Router();
-var bodyParser = require('body-parser');
-var methodOverride = require('method-override');
+var request = require('request');
+var cheerio = require('cheerio');
+
+router.use('/', function(req,res){
+  res.render('index');
+});
 
 
 
