@@ -1,0 +1,28 @@
+{
+  "name": "news_scraper_dependencies",
+  "version": "1.0.0",
+  "description": "Read the latest news articles and leave comments.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Lance-Martin/newsScraper.git"
+  },
+  "author": "Lance Martin",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Lance-Martin/newsScraper/issues"
+  },
+  "homepage": "https://github.com/Lance-Martin/newsScraper#readme",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "cheerio": "^0.20.0",
+    "express": "^4.14.0",
+    "express-handlebars": "^3.0.0",
+    "mongoose": "^4.5.9",
+    "request": "^2.74.0"
+  }
+}
