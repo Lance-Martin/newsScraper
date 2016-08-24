@@ -33,22 +33,12 @@ var Article = require('../models/articles.js');
 //#################Routes#######################
 //===================================================
 router.get('/', function(req,res){
-  Article.find({}, function(err, doc){
-		// log any errors
-		if (err){
-			console.log(err);
-		}
-		// or send the doc to the browser as a json object
-		else {
-			res.render('index', doc);
-		}
-	});
+  res.render('index');
 });
 
 router.get('/scrape', function(req,res){
   request("https://www.bbc.com/news", function (error, response, html) {
     if (error) throw error;
-    console.log('have sent cheerio to the ny times');
   	// Load the html into cheerio and save it to a var.
     // '$' becomes a shorthand for cheerio's selector commands,
     //  much like jQuery's '$'.
@@ -58,7 +48,7 @@ router.get('/scrape', function(req,res){
       var result = {};
       //console.log($('.theme-feature').html());
       result.title = $('.buzzard-item').find(' .title-link__title-text').text();
-      result.link = "https://www.bbc/news"+$('.buzzard-item').find('.title-link').attr('href');
+      result.link = "https://www.bbc.com"+$('.buzzard-item').find('.title-link').attr('href');
       result.summary = $('.buzzard__summary').text();
       console.log(result);
       var entry = new Article (result);
@@ -92,5 +82,56 @@ router.get('/articles', function(req, res){
 		}
 	});
 });
+
+router.get('/articles/:id', function(req, res){
+	// using the id passed in the id parameter,
+	// prepare a query that finds the matching one in our db...
+	Article.findOne({'_id': req.params.id})
+	// and populate all of the notes associated with it.
+	.populate('comments')
+	// now, execute our query
+	.exec(function(err, doc){
+		// log any errors
+		if (err){
+			console.log(err);
+		}
+		// otherwise, send the doc to the browser as a json object
+		else {
+			res.json(doc);
+		}
+	});
+});
+
+router.post('/articles/:id', function(req, res){
+  console.log(req.body);
+	// create a new note and pass the req.body to the entry.
+	var newComment = new Comments(req.body);
+
+	// and save the new note the db
+	newComment.save(function(err, doc){
+		// log any errors
+		if(err){
+			console.log(err);
+		}
+		// otherwise
+		else {
+			// using the Article id passed in the id parameter of our url,
+			// prepare a query that finds the matching Article in our db
+			// and update it to make it's lone note the one we just saved
+			Article.findOneAndUpdate({'_id': req.params.id}, {'comments':doc._id})
+			// execute the above query
+			.exec(function(err, doc){
+				// log any errors
+				if (err){
+					console.log(err);
+				} else {
+					// or send the document to the browser
+					res.send(doc);
+				}
+			});
+		}
+	});
+});
+
 
 module.exports = router;
