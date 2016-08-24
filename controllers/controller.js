@@ -71,19 +71,6 @@ router.get('/scrape', function(req,res){
     				});
         }
       });
-      // var entry = new Article (result);
-      //
-			// 	// now, save that entry to the db
-			// 	entry.save(function(err, doc) {
-			// 		// log any errors
-			// 	  if (err) {
-			// 	    console.log(err);
-			// 	  }
-			// 	  // or log the doc
-			// 	  else {
-			// 	    console.log(doc);
-			// 	  }
-			// 	});
   });
   res.redirect('/');
   console.log("scraped");
