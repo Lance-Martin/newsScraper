@@ -51,21 +51,41 @@ router.get('/scrape', function(req,res){
       result.link = "https://www.bbc.com"+$('.buzzard-item').find('.title-link').attr('href');
       result.summary = $('.buzzard__summary').text();
       console.log(result);
-      var entry = new Article (result);
+      Article.findOne({'title': result.title}, function(err, doc){
+        if (doc) {
+          console.log("this article already exist and we cant be double adding to the database now can we?");
+        }
+        else {
+          var entry = new Article (result);
 
-				// now, save that entry to the db
-				entry.save(function(err, doc) {
-					// log any errors
-				  if (err) {
-				    console.log(err);
-				  }
-				  // or log the doc
-				  else {
-				    console.log(doc);
-				  }
-				});
+    				// now, save that entry to the db
+    				entry.save(function(err, doc) {
+    					// log any errors
+    				  if (err) {
+    				    console.log(err);
+    				  }
+    				  // or log the doc
+    				  else {
+    				    console.log(doc);
+    				  }
+    				});
+        }
+      });
+      // var entry = new Article (result);
+      //
+			// 	// now, save that entry to the db
+			// 	entry.save(function(err, doc) {
+			// 		// log any errors
+			// 	  if (err) {
+			// 	    console.log(err);
+			// 	  }
+			// 	  // or log the doc
+			// 	  else {
+			// 	    console.log(doc);
+			// 	  }
+			// 	});
   });
-  res.send('scraped');
+  res.redirect('/');
   console.log("scraped");
 });
 

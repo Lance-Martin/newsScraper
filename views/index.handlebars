@@ -66,20 +66,46 @@
         }).done(function(data) {
           console.log(data);
           // if there's a note in the article
-          if(data.comments !== null){
+          if(data.comments){
+            console.log('should have input the comment');
             // place the title of the note in the title input
             $('.comments').html('<p>'+data.comments.body+'</p>');
           }
           else {
+            console.log("there isn't a comment");
             $('.comments').html("<p>There aren't any comments for this story yet. Care to add one?</p>");
           }
         });
       }
+      getComment();
       $('#next').on('click',function(){
-        firstStory--;
-        populate();
-        getComment();
+        if (firstStory > 0) {
+          firstStory--;
+          currentID = articleList[firstStory]._id;
+          populate();
+          getComment();
+        }
+        else {
+          firstStory = articleList.length-1;
+          currentID = articleList[firstStory]._id;
+          populate();
+          getComment();
+        }
       });
+      $('#previous').on('click',function(){
+        if (firstStory < articleList.length - 1){
+          firstStory++;
+          currentID = articleList[firstStory]._id;
+          populate();
+          getComment();
+        }
+        else {
+          firstStory = 0;
+          currentID = articleList[firstStory]._id;
+          populate();
+          getComment();
+        }
+      })
       $('#postNote').on('click',function(){
         var currentID = articleList[firstStory]._id;
         console.log("clicked")
