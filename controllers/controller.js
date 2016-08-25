@@ -50,10 +50,11 @@ router.get('/scrape', function(req,res){
       result.title = $('.buzzard-item').find(' .title-link__title-text').text();
       result.link = "https://www.bbc.com"+$('.buzzard-item').find('.title-link').attr('href');
       result.summary = $('.buzzard__summary').text();
-      console.log(result);
+      //console.log(result);
       Article.findOne({'title': result.title}, function(err, doc){
         if (doc) {
           console.log("this article already exist and we cant be double adding to the database now can we?");
+          res.send('alreadyFresh');
         }
         else {
           var entry = new Article (result);
@@ -66,13 +67,13 @@ router.get('/scrape', function(req,res){
     				  }
     				  // or log the doc
     				  else {
-    				    console.log(doc);
+    				    //console.log(doc);
+                res.redirect('/');
     				  }
     				});
         }
       });
   });
-  res.redirect('/');
   console.log("scraped");
 });
 
@@ -122,23 +123,42 @@ router.post('/articles/:id', function(req, res){
 		}
 		// otherwise
 		else {
+      console.log(doc);
+      res.send(doc);
 			// using the Article id passed in the id parameter of our url,
 			// prepare a query that finds the matching Article in our db
 			// and update it to make it's lone note the one we just saved
-			Article.findOneAndUpdate({'_id': req.params.id}, {'comments':doc._id})
+			Article.findOneAndUpdate({'_id': req.params.id}, {'comments':doc._id}, {new: true})
 			// execute the above query
-			.exec(function(err, doc){
+			.exec(function(err, obj){
 				// log any errors
 				if (err){
 					console.log(err);
 				} else {
-					// or send the document to the browser
-					res.send(doc);
+          //console.log(obj);
 				}
 			});
 		}
 	});
 });
 
+router.post('/delete/:id', function(req, res){
+  console.log("delete route hit");
+  console.log(req.body.commentID);
+  Article.findOneAndUpdate({'_id': req.params.id},{'comments': null}, function(err, doc){
+    if (err){
+      console.log(err);
+    } else {
+      //console.log(doc);
+    }
+
+  });
+  Comments.remove({'_id': req.body.commentID},function(err){
+    if (err) throw err;
+    console.log('removed');
+    res.send('removed');
+  });
+
+});
 
 module.exports = router;

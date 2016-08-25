@@ -1,19 +1,17 @@
 <nav>
-  <div class="nav-wrapper">
+  <div class="nav-wrapper" id = "nav">
     <a href="/" class="brand-logo">News Glimpse</a>
   </div>
 </nav>
 <div class="container">
-  <div class = "row">
-    <div class = "col s1 m3">
-      <div class="valign-wrapper">
-        <i id = "previous" class=" large material-icons">skip_previous</i>
-      </div>
+  <div class = "row" id = "content">
+    <div class = "col s1 m3 l2" id = "left">
+        <i id = "previous" class=" large material-icons center-align">skip_previous</i>
     </div>
-    <div class="col s10 m6">
+    <div class="col s10 m6 l8">
       <div class = "valign-wrapper">
-        <div class="card large blue-grey darken-1">
-          <div class="card-content white-text">
+        <div class="card blue-grey darken-1" id = "news">
+          <div class="card-content white-text" id = "storyInfo">
             <span class="card-title" id = "storyHeadline">Card Title</span>
             <p id = "summary">I am a very simple card. I am good at containing small bits of information.
             I am convenient because I require little markup to use effectively.</p>
@@ -27,21 +25,20 @@
             <span class = "card-title">Add Comment</span>
             <textarea id="commentAdded" placeholder = "your comment here" type="text"  class="materialize-textarea" ></textarea>
           </div>
-          <div class="card-action">
+          <div class="card-action" id = "cardBottom">
             <btn class="waves-effect waves-light btn" id = "postNote">Post a comment</btn>
-            <a href="#">This is a link</a>
+            <btn class="waves-effect waves-light btn" id = "removeNote">Remove comment</btn>
+            <btn id = "scrape" class = "waves-effect wave-light btn">Get latest story</btn>
           </div>
         </div>
       </div>
     </div>
-    <div class="col s1 m3">
-      <div class="valign-wrapper">
-        <i id = "next" class="large material-icons">skip_next</i>
-      </div>
+    <div class="col s1 m3 l2" id = "right">
+        <i id = "next" class="large material-icons center-align">skip_next</i>
     </div>
   </div>
 </div>
-
+<script type = "text/javascript" src = "/assets/js/sweetalert.min.js"></script>
 <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
 <script type = "text/javascript">
   $(document).ready(function(){
@@ -116,8 +113,41 @@
              body: $('#commentAdded').val() // value taken from notetextarea
            }
          }).done(function( data ) {
+           console.log(data);
+           articleList[firstStory].comments._id = data._id;
+           console.log(articleList[firstStory]);
+           $('#commentAdded').val('');
+           getComment();
            });
 
+      });
+
+      $('#removeNote').on('click',function(){
+        var currentID = articleList[firstStory]._id;
+        var commentID = articleList[firstStory].comments;
+        console.log(commentID);
+        $.ajax({
+           method: "POST",
+           url: "/delete/" + currentID,
+           data: {
+             currentID: currentID,
+             commentID: commentID
+           }
+         }).done(function( data ) {
+           console.log(data);
+           getComment();
+           });
+      });
+
+      $('#scrape').on('click', function(){
+        $.ajax({
+          method: "GET",
+          url: '/scrape'
+        }).done(function(data){
+          if (data) {
+            sweetAlert("Oops...", "Someone already added the lastest article!", "error");
+          }
+        });
       });
     });
     console.log(articleList);
