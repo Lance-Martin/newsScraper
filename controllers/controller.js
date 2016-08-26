@@ -38,6 +38,7 @@ router.get('/', function(req,res){
 
 router.get('/scrape', function(req,res){
   request("https://www.bbc.com/news", function (error, response, html) {
+    console.log("its scraping at least");
     if (error) throw error;
   	// Load the html into cheerio and save it to a var.
     // '$' becomes a shorthand for cheerio's selector commands,
@@ -50,7 +51,7 @@ router.get('/scrape', function(req,res){
       result.title = $('.buzzard-item').find(' .title-link__title-text').text();
       result.link = "https://www.bbc.com"+$('.buzzard-item').find('.title-link').attr('href');
       result.summary = $('.buzzard__summary').text();
-      //console.log(result);
+      console.log(result);
       Article.findOne({'title': result.title}, function(err, doc){
         if (doc) {
           console.log("this article already exist and we cant be double adding to the database now can we?");
@@ -67,14 +68,15 @@ router.get('/scrape', function(req,res){
     				  }
     				  // or log the doc
     				  else {
+                console.log("scraped and added");
     				    //console.log(doc);
-                res.redirect('/');
+                res.send('reload');
     				  }
     				});
         }
       });
   });
-  console.log("scraped");
+
 });
 
 router.get('/articles', function(req, res){
@@ -112,7 +114,7 @@ router.get('/articles/:id', function(req, res){
 
 router.post('/articles/:id', function(req, res){
   console.log(req.body);
-	// create a new note and pass the req.body to the entry.
+	// create a new comment and pass the req.body to the entry.
 	var newComment = new Comments(req.body);
 
 	// and save the new note the db
@@ -127,7 +129,7 @@ router.post('/articles/:id', function(req, res){
       res.send(doc);
 			// using the Article id passed in the id parameter of our url,
 			// prepare a query that finds the matching Article in our db
-			// and update it to make it's lone note the one we just saved
+			// and update it to make it's lone comment the one we just saved
 			Article.findOneAndUpdate({'_id': req.params.id}, {'comments':doc._id}, {new: true})
 			// execute the above query
 			.exec(function(err, obj){
