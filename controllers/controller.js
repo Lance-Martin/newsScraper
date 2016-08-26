@@ -47,11 +47,9 @@ router.get('/scrape', function(req,res){
 
     // Select each instance of the html body that you want to scrape.
       var result = {};
-      //console.log($('.theme-feature').html());
       result.title = $('.buzzard-item').find(' .title-link__title-text').text();
       result.link = "https://www.bbc.com"+$('.buzzard-item').find('.title-link').attr('href');
       result.summary = $('.buzzard__summary').text();
-      console.log(result);
       Article.findOne({'title': result.title}, function(err, doc){
         if (doc) {
           console.log("this article already exist and we cant be double adding to the database now can we?");
@@ -68,7 +66,6 @@ router.get('/scrape', function(req,res){
     				  }
     				  // or log the doc
     				  else {
-                console.log("scraped and added");
     				    //console.log(doc);
                 res.send('reload');
     				  }
@@ -113,7 +110,6 @@ router.get('/articles/:id', function(req, res){
 });
 
 router.post('/articles/:id', function(req, res){
-  console.log(req.body);
 	// create a new comment and pass the req.body to the entry.
 	var newComment = new Comments(req.body);
 
@@ -125,7 +121,6 @@ router.post('/articles/:id', function(req, res){
 		}
 		// otherwise
 		else {
-      console.log(doc);
       res.send(doc);
 			// using the Article id passed in the id parameter of our url,
 			// prepare a query that finds the matching Article in our db
@@ -157,7 +152,6 @@ router.post('/delete/:id', function(req, res){
   });
   Comments.remove({'_id': req.body.commentID},function(err){
     if (err) throw err;
-    console.log('removed');
     res.send('removed');
   });
 
